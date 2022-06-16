@@ -89,15 +89,21 @@
 		2. By Sub Domain
 		3. Strangler Pattern
 		
-		:- By Business Capability
+		Brownfield applications - Converting monolithic to microservice 
+		Greenfield applications - Developing Microservice app from scratch
 		
+		:- By Business Capability
+			Mainly for Greenfield applications.
+			Breaking an application into smaller pieces has to be done logically.
+			Decompose by business capability. A business capability is something that a business does in order to generate value. The set of capabilities for a given business depend on the type of business. 
+			e.g:- Online Portal -> Product Management, Order Management, Account Management, Payment Management, Login Management
+			Each business capability can be thought of as a service, except it’s business-oriented rather than technical.
 		
 		:- By Sub Domain
 		
 		
 		:- Strangler Pattern
-			Brownfield - Converting monolithic to microservice 
-			Greenfield - Developing Microservice app from scratch
+			
 			
 			
 		
