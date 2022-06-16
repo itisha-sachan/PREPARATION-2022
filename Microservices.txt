@@ -1,0 +1,166 @@
+:- 12 Factor App
+	1. Codebase
+		One codebase tracked in revision control, many deploys
+		In Microservices, every service should have its own codebase. Having an independent codebase helps you to easy CI/CD process for your applications.
+		Twelve-factor app advocates of not sharing the code between the application. If you need to share you need to build a library and make it as a dependency and manage through package repository like maven.
+		
+	2. Dependencies
+		Explicitly Declare and Isolate the Dependencies
+		It talks about managing the dependencies externally using dependency management tools instead of adding them to your codebase.
+		All the application packages will be managed through package managers like sbt, maven.
+		In non-containerized environments, you can go for configuration management tools like chef, ansible, etc. to install system-level dependencies.
+		For a containerized environment, you can go for dockerfile.
+		
+	3. Config
+		Store Configurations In an Environment
+		Anything that varies between the deployment environments is considered as configuration
+			Database connections and credentials, system integration endpoints
+			Credentials to external services such as Amazon S3 or Twitter or any other external apps
+			Application-specific information like IP Addresses, ports, and hostnames, etc.
+		It advocates the strict separation between the code and configurations. The code must be the same irrespective of where the application being deployed.
+		In Microservice - Externalize the configurations from the application. In a microservice service environment, you can manage the configurations for your applications from a source control like git (spring-cloud-config) and use the environment variables to not to maintain the sensitive information in the source control.
+		
+	
+	4. Backing Services
+		Treat Backing Resources as Attached Resources
+		Database, Message Brokers, any other external systems that the app communicates is treated as Backing service.
+		In a microservice ecosystem, anything external to service is treated as attached resource. The resource can be swapped at any given point of time without impacting the service.
+		Let us say, you would like to change the database server from MySQL to Aurora. To do so, you should not make any code changes to your application. Only configuration change should be able to take care of it.
+	
+	5. Build, Run, Release
+		Strictly Separate Build and Run Stages
+		The application must have a strict separation between the build, release, and run stages. Let us understand each stage in more detail.
+
+		Build stage: 
+			transform the code into an executable bundle/ build package.
+		Release stage: 
+			get the build package from the build stage and combines with the configurations of the deployment environment and make your application ready to run.
+		Run stage: 
+			It is like running your app in the execution environment.
+			
+		Microservices: You can use CI/CD tools to automate the builds and deployment process. Docker images make it easy to separate the build, release, and run stages more efficiently.
+	
+	6. Stateless Process
+		Execute the App as One or More Stateless Processes
+		As per 12-factor principles, the application should not store the data in in-memory and it must be saved to a store and use from there. As far as the state concern, your application should store the state in the database instead of in memory of the process.
+		Microservices - By adopting the stateless nature of REST, your services can be horizontally scaled as per the needs with zero impact. If your system still requires to maintain the state use the attached resources (redis, Memcached, or datastore) to store the state instead of in-memory.
+		
+	7. Port Binding
+		Export Services Via Port Binding
+		Spring boot is one example of this one. Spring boot by default comes with embedded tomcat, jetty, or undertow.
+	
+	8. Concurrency
+		Scale Out Via the Process Model
+		This talks about scaling the application. Twelve-factor app principles suggest to consider running your application as multiple processes/instances instead of running in one large system. You can still opt-in for threads to improve the concurrent handling of the requests.
+		In a nutshell, twelve-factor app principles advocate to opt-in for horizontal scaling instead of vertical scaling.
+
+		vertical scaling- Add additional hardware to the system
+		Horizontal scaling - Add additional instances of the application
+
+		Microservices: By adopting the containerization, applications can be scaled horizontally as per the demands.
+	
+	9. Disposability
+		Maximize the Robustness with Fast Startup and Graceful Shutdown
+		When the application is shutting down or starting, an instance should not impact the application state.
+		The system should not get impacted when new instances are added or takedown the existing instances as per need. This is also known as system disposability.
+		Systems do crash due to various reasons. the system should ensure that the impact would be minimal and the application should be stored in a valid state.
+		Microservices: By adopting the containerization into the deployment process of microservices, your application implicitly follows this principle at a maximum extent. Docker containers can be started or stopped instantly. Storing request, state, or session data in queues or other backing services ensures that a request is handled seamlessly in the event of a container crash.
+		
+	10. Dev/Prod Parity
+			Keep Development, Staging, and Production as Similar as Possible
+			
+	11. Logs
+		Treat Logs as Event Streams
+		Twelve-factor app principles advocate separating the log generation and processing the log's information. From the application logs will be written as a standard output and the execution environment takes care of capture, storage, curation, and archival of such stream should be handled by the execution environment.
+		ELK
+	
+	12. Admin Processes
+			Run Admin/Management Tasks as One-Off Processes
+			
+:- Microservice Architecture
+	1. Decomposition Pattern
+	2. Integration Pattern
+	3. Database Pattern
+	4. Observability Pattern
+	5. Cross Cutting Concern Pattern
+	
+	:- Decomposition Pattern
+		1. By Business Capability
+		2. By Sub Domain
+		3. Strangler Pattern
+		
+		:- By Business Capability
+		
+		
+		:- By Sub Domain
+		
+		
+		:- Strangler Pattern
+			Brownfield - Converting monolithic to microservice 
+			Greenfield - Developing Microservice app from scratch
+			
+			
+		
+		
+		
+
+:- Fault Tolerance And Resilience
+	Fault Tolerance - 
+		Microservices need to be extremely reliable. When we build a microservices architecture, there are a large number of small microservices, and they all need to communicate with one another. Let’s say Microservice5 is down at some point of time. All the other microservices are directly or indirectly dependent on it, so they all go down as well.
+		The solution to this problem is to have a fallback in case of failure of a microservice. This aspect of a microservice is called fault tolerance.
+		
+		How much a system tolerate a single fault in any microservice
+		
+	Resilient - 
+		How many faults a system can tolerate.
+		
+:- Scenarios for Fault Tolerance - 
+	If one service goes down, its better to run multiple instances.
+	If one service instance is slow, use - timeout
+	:- Setting Timeout in RestTemplate
+		HttpComponentsClientHttpRequestFactory httpComponentsClientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+		httpComponentsClientHttpRequestFactory.setConnectTimeout(3000);
+		return new RestTemplate(httpComponentsClientHttpRequestFactory);
+
+:- Solution (Circuit Breaker Pattern)
+	Detect something is wrong
+	Take temporary steps to avoid the situation getting worse.
+	Deactivate the problemcomponent so that it doesn't affectdownstream components.
+	
+	Its basic function is to interrupt current flow after a fault is detected.
+	Unlike a fuse, which operates once and then must be replaced, a circui breaker can be reset to resume normal operation.
+	
+:- When does the request trip
+	Last n req to consider for the decision.
+	How many of those should fail
+	Timeout duration
+	
+:- When does the request un trip
+	How long after a circuit trip to try again
+	
+:- We need a fallback when a circuit breaks
+	1. Throw an error
+	2. Return a fallback default response
+	3. Store previous responses in cache and use when required
+	
+:- Why Circuit Breakers - 
+	Failing Fast
+	Fallback Functionality
+	Automatic Recovery
+	
+:- Circuit Breaker Pattern - 
+	When To Break Circuit
+	
+	What to do when ciruit breaks
+	
+	When to resume requests
+	
+:- Hystrix
+	Open source library from Netflix
+	It internally implements Circuit Breaker Pattern
+	Give it the configuration and it will work.
+	Works well with Spring Boot.
+	
+	
+	
+	
